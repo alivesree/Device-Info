@@ -46,7 +46,7 @@ namespace getSystemInfo
                 //if (nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
                 //    wlanMAC = nic.GetPhysicalAddress().ToString();
                 if (nic.OperationalStatus == OperationalStatus.Up && (nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet || nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211))
-                    currentMAC = nic.GetPhysicalAddress().ToString();
+                    currentMAC+=nic.GetPhysicalAddress().ToString()+" , ";
             }
             return new Tuple<string, string, string>(lanMAC, wlanMAC, currentMAC);
         }
