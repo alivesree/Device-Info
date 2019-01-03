@@ -113,7 +113,7 @@ namespace getSystemInfo
             string cpuID = getCPUID();
 
             //Mix them up and remove some useless 0's
-            return cpuID.Substring(13) + cpuID.Substring(1, 4) + volumeSerial + cpuID.Substring(4, 4);
+            return volumeSerial + cpuID;
         }
 
 
