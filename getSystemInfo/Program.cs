@@ -19,6 +19,10 @@ namespace getSystemInfo
 
 
             Console.WriteLine("Genrated System ID      :   "+getUniqueID("C"));
+            Console.WriteLine("CPU Name                :   " + getCPUName());
+            Console.WriteLine("CPU             ID      :   " + getCPUID());
+            Console.WriteLine("C Drive         ID      :   " + getDriveID("C"));
+
 
             Console.WriteLine("IP Address              :   " + GetAllLocalIPv4());
             Console.WriteLine("Computer Name           :   "+GetMachineName());
@@ -113,9 +117,31 @@ namespace getSystemInfo
             string cpuID = getCPUID();
 
             //Mix them up and remove some useless 0's
-            return volumeSerial + cpuID;
+            return cpuID.Substring(13) + cpuID.Substring(1, 4) + volumeSerial + cpuID.Substring(4, 4)+ GetLanMacAddress();
         }
+       static string getDriveID(string drive)
+        {
+            if (drive == string.Empty || drive == null)
+            {
+                //Find first drive
+                foreach (DriveInfo compDrive in DriveInfo.GetDrives())
+                {
+                    if (compDrive.IsReady)
+                    {
+                        drive = compDrive.RootDirectory.ToString();
+                        break;
+                    }
+                }
+            }
 
+            if (drive.EndsWith(":\\"))
+            {
+                //C:\ -> C
+                drive = drive.Substring(0, drive.Length - 2);
+            }
+
+           return getVolumeSerial(drive);
+        }
 
         private static string getVolumeSerial(string drive)
         {
@@ -145,6 +171,39 @@ namespace getSystemInfo
             }
 
             return cpuInfo;
+        }
+        private static string getCPUName()
+        {
+            string cpuInfo = "";
+
+            ManagementClass managClass = new ManagementClass("win32_processor");
+            ManagementObjectCollection managCollec = managClass.GetInstances();
+
+            foreach (ManagementObject managObj in managCollec)
+            {
+                if (cpuInfo == "")
+                {
+                    cpuInfo=managObj.Properties["name"].Value.ToString();
+                    break;
+                }
+            }
+
+            return cpuInfo;
+        }
+        public static string GetLanMacAddress()
+        {
+            string lan = "";
+            foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
+            {
+
+                // Only consider Ethernet network interfaces
+                if (nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                {
+                    lan = nic.GetPhysicalAddress().ToString();
+                    break;
+                }
+            }
+            return lan;
         }
     }
 }
